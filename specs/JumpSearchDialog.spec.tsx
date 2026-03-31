@@ -108,6 +108,30 @@ describe('JumpSearchDialog', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it('renders as a portal directly inside document.body', () => {
+    renderDialog();
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.parentElement).toBe(document.body);
+  });
+
+  it('backdrop uses inline styles for fixed overlay — no Tailwind dependency', () => {
+    renderDialog();
+    const backdrop = screen.getByRole('dialog');
+    expect(backdrop.style.position).toBe('fixed');
+    expect(backdrop.style.zIndex).toBeTruthy();
+    expect(Number(backdrop.style.zIndex)).toBeGreaterThanOrEqual(9999);
+    expect(backdrop.style.display).toBe('flex');
+    expect(backdrop.getAttribute('class') ?? '').toBe('');
+  });
+
+  it('dialog panel uses inline styles — no Tailwind dependency', () => {
+    renderDialog();
+    const panel = screen.getByRole('dialog').firstElementChild as HTMLElement;
+    expect(panel.style.background).toBeTruthy();
+    expect(panel.style.borderRadius).toBeTruthy();
+    expect(panel.getAttribute('class') ?? '').toBe('');
+  });
+
   it('does not close when clicking inside the dialog panel', () => {
     const onClose = vi.fn();
     render(<JumpSearchDialog deck={deck} onClose={onClose} onSelectPath={vi.fn()} />);

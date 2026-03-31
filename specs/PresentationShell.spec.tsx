@@ -21,6 +21,17 @@ describe('PresentationShell', () => {
     expect(screen.getByText('slide content')).toBeDefined();
   });
 
+  it('wrapper uses inline minHeight style — no Tailwind dependency', () => {
+    const { container } = render(
+      <PresentationShell deck={deck} pathname="/s/1" onNavigate={vi.fn()}>
+        <div>content</div>
+      </PresentationShell>,
+    );
+    const wrapper = container.firstElementChild as HTMLElement;
+    expect(wrapper.style.minHeight).toBe('100vh');
+    expect(wrapper.getAttribute('class') ?? '').toBe('');
+  });
+
   it('opens JumpSearchDialog on "/" key press', () => {
     render(
       <PresentationShell deck={deck} pathname="/s/1" onNavigate={vi.fn()}>

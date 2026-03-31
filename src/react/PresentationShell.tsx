@@ -33,7 +33,7 @@ export function PresentationShell({
   useSwipeNav(enableSwipe ? { deck, pathname, onNavigate } : { deck: [], pathname, onNavigate });
 
   return (
-    <div className="min-h-screen">
+    <div style={{ minHeight: '100vh' }}>
       {children}
       {isDialogOpen && (
         <JumpSearchDialog

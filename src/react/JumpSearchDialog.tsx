@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { SlideRef } from '../types';
 import { searchSlides } from '../searchSlides';
 import type { SlideSearchResult } from '../types';
@@ -80,44 +81,86 @@ export function JumpSearchDialog(props: {
     }
   }
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Jump to slide"
-      className="fixed inset-0 z-50 flex items-start justify-center p-6"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '48px 24px',
+        background: 'rgba(0,0,0,0.5)',
+      }}
       onMouseDown={(e) => {
-        // close when clicking backdrop only
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="w-full max-w-xl rounded-lg bg-background p-4 shadow-lg border border-foreground/10"
+        style={{
+          width: '100%',
+          maxWidth: '560px',
+          borderRadius: '8px',
+          background: '#111',
+          color: '#fff',
+          padding: '16px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          boxSizing: 'border-box',
+        }}
         onKeyDown={onKeyDown}
       >
-        <div className="text-sm font-medium" id="jump-dialog-title">
+        <div
+          style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}
+          id="jump-dialog-title"
+        >
           Jump to slide ( / )
         </div>
         <input
           ref={inputRef}
           value={query}
           onChange={handleQueryChange}
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          style={{
+            width: '100%',
+            borderRadius: '6px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            padding: '8px 12px',
+            background: '#1a1a1a',
+            color: '#fff',
+            fontSize: '14px',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
           placeholder="Type a slide number or title"
           aria-label="Search slides"
         />
 
-        <div className="mt-3">
+        <div style={{ marginTop: '12px', maxHeight: '60vh', overflowY: 'auto' }}>
           {results.length === 0 ? (
-            <div className="text-sm text-zinc-500">No matching slides</div>
+            <div style={{ fontSize: '13px', color: '#888' }}>No matching slides</div>
           ) : (
-            <ul className="space-y-1" role="listbox" aria-label="Slide results">
+            <ul
+              style={{ listStyle: 'none', margin: 0, padding: 0 }}
+              role="listbox"
+              aria-label="Slide results"
+            >
               {groups.map((group) => (
                 <React.Fragment key={group.section ?? '__ungrouped__'}>
                   {group.section !== undefined && (
                     <li
                       role="presentation"
-                      className="px-2 pt-2 pb-0.5 text-xs font-semibold text-zinc-500 uppercase tracking-wide"
+                      style={{
+                        padding: '8px 8px 2px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#888',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
                     >
                       {group.section}
                     </li>
@@ -127,11 +170,14 @@ export function JumpSearchDialog(props: {
                       key={r.path}
                       role="option"
                       aria-selected={r.flatIndex === highlightIndex}
-                      className={
-                        r.flatIndex === highlightIndex
-                          ? 'rounded-md bg-foreground text-background px-2 py-1 cursor-pointer'
-                          : 'rounded-md px-2 py-1 cursor-pointer'
-                      }
+                      style={{
+                        borderRadius: '6px',
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        background: r.flatIndex === highlightIndex ? '#fff' : 'transparent',
+                        color: r.flatIndex === highlightIndex ? '#111' : '#fff',
+                      }}
                       onMouseDown={() => {
                         onSelectPath(r.path);
                         onClose();
@@ -146,6 +192,7 @@ export function JumpSearchDialog(props: {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
